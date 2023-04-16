@@ -25,10 +25,11 @@ class Tree:
     def __init__(self, n, c):
         self.n = n
         self.choice = c
-        self.preorder = []
-        self.inorder = []
+        self.order = []
+        self.preorder = [1, 2, 3, 4, 5, 6, 7]
+        self.inorder = [4, 5, 3, 2, 6, 1, 7]
         self.root = None
-        self.direction_list = []
+        self.direction_list = [1, 1, -1, -1, 1, -1, 1]
         self.direction_index = []
         self.comb = []
 
@@ -53,14 +54,13 @@ class Tree:
         # init order
         if self.n:
             for i in range(1, self.n+1):
-                self.preorder.append(i)
-            self.inorder = copy(self.preorder)
-        # init direction
+                self.order.append(i)
+
         for i in range(self.n):
-            self.direction_list.append(1)
             if not i:
                 continue
             self.direction_index.append(i)
+
         # init station track coordinate
         a = (self.n + 1) // 2 * self.station_track_space
         for i in range(self.n+1):
@@ -139,7 +139,10 @@ class Tree:
 
     def plan_generator(self):
         flag = True
-        self.order_generator()
+        if self.preorder is None and self.inorder is None:
+            self.preorder = copy(self.order)
+            self.inorder = copy(self.order)
+            self.order_generator()
 
         while flag:
             print('inorder:' + str(self.inorder))
@@ -149,6 +152,7 @@ class Tree:
                 if self.root:
                     flag = False
             except:
+                print('ERROR: inorder error, could not generate a plan')
                 self.order_generator()
                 continue
 
@@ -268,6 +272,20 @@ class Tree:
             self.graph_init(G, node.right, pos=pos, layer=r_layer)
         return G, pos
 
+    def node_direction_init(self,direction_list):
+        # node direction init
+        seed = self.root
+        queue = [seed]
+        for k in queue:
+            if k.is_virtual:
+                continue
+            # print(k.value)
+            k.direction = direction_list[k.value - 1]
+            if k.left:
+                queue.append(k.left)
+            if k.right:
+                queue.append(k.right)
+
     def main(self):
         flag = True
         # plan layer filter
@@ -285,35 +303,44 @@ class Tree:
         # direction generator & controller
         self.comb = self.direction_generator()
         name = 0
-        for i in range(self.choice):
-            name += 1
-            c = choice(self.comb)
-            time.sleep(0.1)
-            print('choice:'+str(c))
-            direction_list = copy(self.direction_list)
-            for j in c:
-                direction_list[j] = -1
-            print('direction_list:'+str(direction_list))
-        # node direction init
-            seed = self.root
-            queue = [seed]
-            for k in queue:
-                if k.is_virtual:
+
+        # init direction
+        if not self.direction_list:
+            for i in range(self.n):
+                self.direction_list.append(1)
+                if not i:
                     continue
-                # print(k.value)
-                k.direction = direction_list[k.value-1]
-                if k.left:
-                    queue.append(k.left)
-                if k.right:
-                    queue.append(k.right)
-        # direction filter
-            if self.direction_filter():
-                continue
-        # distance & angle & coordinate calculator
+                self.direction_index.append(i)
+
+            for i in range(self.choice):
+                name += 1
+                c = choice(self.comb)
+                time.sleep(0.1)
+                print('choice:'+str(c))
+                direction_list = copy(self.direction_list)
+                for j in c:
+                    direction_list[j] = -1
+                print('direction_list:'+str(direction_list))
+
+                self.node_direction_init(direction_list)
+            # direction filter
+                if self.direction_filter():
+                    continue
+            # distance & angle & coordinate calculator
+                self.coordinate_calculater(self.root)
+                # draw track
+                self.draw_track(name)
+                print(self.station_track_coordinate)
+        else:
+            direction_list = copy(self.direction_list)
+            print('direction_list:' + str(direction_list))
+            self.node_direction_init(direction_list)
+            # distance & angle & coordinate calculator
             self.coordinate_calculater(self.root)
             # draw track
             self.draw_track(name)
             print(self.station_track_coordinate)
+
 
 
 def printTree(root):
@@ -367,7 +394,7 @@ class draw():
 
 
 if __name__ == "__main__":
-    s = Tree(7, 30)
+    s = Tree(7, 5)
     s.main()
     printTree(s.root)
     d = draw(s.root)
