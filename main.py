@@ -243,6 +243,7 @@ class Tree:
                     print(str(k.value) + '方向：' + str(k.direction))
                     print(str(k.value) + '号角度：' + str(k.angle))
                     print(str(k.value) + '号坐标：' + str(k.coordinate))
+                    print('L列表：' + str(self.l))
                 if k.left:
                     queue.append(k.left)
                 if k.right:
