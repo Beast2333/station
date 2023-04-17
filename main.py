@@ -373,9 +373,10 @@ class Tree:
         sheet = workbook.sheets.add(str(name))
         # workbook.app(visible=False)
         for p in range(0, self.n + 1):
-            pc = chr(p + 65)
+
             for j in range(0, self.n + 1):
-                token = pc + str(j + 1)
+                jc = chr(j + 65)
+                token = jc + str(p + 1)
                 # print(token)
                 # if p == 0:
                 #     sheet[token].value = str(j)
