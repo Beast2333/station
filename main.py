@@ -26,10 +26,10 @@ class Tree:
         self.n = n
         self.choice = c
         self.order = []
-        self.preorder = [1, 2, 3, 4, 5, 6, 7]
-        self.inorder = [4, 5, 3, 2, 6, 1, 7]
+        self.preorder = []
+        self.inorder = []
         self.root = None
-        self.direction_list = [1, 1, -1, -1, 1, -1, 1]
+        self.direction_list = []
         self.direction_index = []
         self.comb = []
 
@@ -48,7 +48,23 @@ class Tree:
         self.virtual_node_list = []
         self.counter = 2 * self.n + 1
 
+        # statistic param
+        self.pass_order = list()
+        self.pass_order_list = list()
+
         self.init()
+
+    def pass_order_init(self, node):
+        if node:
+            if node.father:
+                self.pass_order.append(node.value)
+                if node.father.value == 1:
+                    self.pass_order.append(1)
+                    return
+                self.pass_order_init(node.father)
+        if node.value == 1:
+            print('ERROR: INPUT NODE IS ROOT')
+            return
 
     def init(self):
         # init order
@@ -137,11 +153,14 @@ class Tree:
         # self.preorder.insert(0, 1)
         self.random_order(self.inorder)
 
-    def plan_generator(self):
+    def plan_generator(self, a):
         flag = True
-        if self.preorder is None and self.inorder is None:
+        if len(self.preorder) == 0 and len(self.inorder) == 0:
             self.preorder = copy(self.order)
             self.inorder = copy(self.order)
+            self.order_generator()
+
+        if not a:
             self.order_generator()
 
         while flag:
@@ -186,6 +205,7 @@ class Tree:
             print('符合层数要求')
             return 1
         else:
+            print('不符合层数要求')
             return 0
 
     def preorder_reader(self, seed):
@@ -290,9 +310,11 @@ class Tree:
     def main(self):
         flag = True
         # plan layer filter
+        a = 0
         while flag:
-            self.plan_generator()
-            if self.layer_filter():
+            self.plan_generator(a)
+            a = self.layer_filter()
+            if a:
                 flag = False
         # init virtual node
         self.virtual_node_init(self.root)
@@ -332,6 +354,20 @@ class Tree:
                 # draw track
                 self.draw_track(name)
                 print(self.station_track_coordinate)
+
+                # node length init
+
+
+                # pass order init
+                self.pass_order_list = []
+                for j in range(self.n + 1):
+                    self.pass_order = []
+                    self.pass_order_init(self.station_track_node[j])
+                    self.pass_order_list.append(self.pass_order)
+                print(self.pass_order_list)
+
+
+
         else:
             direction_list = copy(self.direction_list)
             print('direction_list:' + str(direction_list))
@@ -341,7 +377,13 @@ class Tree:
             # draw track
             self.draw_track(name)
             print(self.station_track_coordinate)
-
+            # pass order init
+            self.pass_order_list = []
+            for j in range(self.n + 1):
+                self.pass_order = []
+                self.pass_order_init(self.station_track_node[j])
+                self.pass_order_list.append(self.pass_order)
+            print(self.pass_order_list)
 
 
 def printTree(root):
@@ -364,7 +406,7 @@ def printTree(root):
     print(res)
 
 
-class draw():
+class draw:
     def __init__(self, node):
         self.node = node
 
@@ -397,7 +439,7 @@ class draw():
 if __name__ == "__main__":
     s = Tree(7, 5)
     s.main()
-    printTree(s.root)
+    # printTree(s.root)
     d = draw(s.root)
     d.draw_plan()
     # print(numpy.random.randint(1, 6, size=5))
