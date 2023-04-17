@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy
 from itertools import combinations
 from random import choice
-import xlwt
+import xlwings
 
 
 class TreeNode:
@@ -368,7 +368,24 @@ class Tree:
                 m[i][j] = [share_point, path, length]
         return m
 
-
+    def excel_output(self, m, name):
+        workbook = xlwings.Book('./matrix.xlsx')
+        sheet = workbook.sheets.add(str(name))
+        # workbook.app(visible=False)
+        for p in range(0, self.n + 1):
+            pc = chr(p + 65)
+            for j in range(0, self.n + 1):
+                token = pc + str(j + 1)
+                # print(token)
+                # if p == 0:
+                #     sheet[token].value = str(j)
+                #     continue
+                # if j == 0:
+                #     sheet[token].value = str(i)
+                #     continue
+                sheet[token].value = str(m[p][j])
+                time.sleep(0.05)
+        # workbook.save('./matrix.xlsx')
 
     def main(self):
         flag = True
@@ -438,20 +455,9 @@ class Tree:
                 print('轨道总长度:' + str(self.total_length_init()))
                 # matrix init
                 m = self.matrix_init()
-                print(m)
+                # print(m)
+                self.excel_output(m, name)
 
-                workbook = xlwt.open_workbook('matrix.xlsx')
-                sheet = workbook.add_sheet(name)
-                for i in range(0, self.n + 1):
-                    for j in range(0, self.n + 2):
-                        if i == 0:
-                            sheet.write(i, j, j)
-                            continue
-                        if j == 0:
-                            sheet.write(i, j, i)
-                            continue
-                        sheet.write(i, j, m[i-1][j-1])
-                workbook.save(path)
 
 
         else:
@@ -480,7 +486,9 @@ class Tree:
             print('轨道总长度:' + str(self.total_length_init()))
             # matrix init
             self.matrix_init()
-            print()
+            m = self.matrix_init()
+            # print(m)
+            self.excel_output(m, 1)
 
 
 class draw:
