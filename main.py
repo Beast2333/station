@@ -356,7 +356,7 @@ class Tree:
                 node_y = self.node_list[y]
                 path_x = self.pass_order_list[x]
                 path_y = self.pass_order_list[y]
-                print(path_x, path_y)
+                # print(path_x, path_y)
                 share_point_list = [i for i in path_x if i in path_y]
                 share_point = max(share_point_list)
                 index = path_y.index(share_point)
