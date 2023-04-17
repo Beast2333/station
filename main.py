@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy
 from itertools import combinations
 from random import choice
+import xlwt
 
 
 class TreeNode:
@@ -19,6 +20,7 @@ class TreeNode:
         self.direction = 1
         self.coordinate = [-1, -1]
         self.angle = 0
+        self.length = 0
 
 
 class Tree:
@@ -32,6 +34,7 @@ class Tree:
         self.direction_list = []
         self.direction_index = []
         self.comb = []
+        self.node_list = {}
 
         self.l_list = [25, 30, 50]
         self.l_forbidden = 3
@@ -50,7 +53,8 @@ class Tree:
 
         # statistic param
         self.pass_order = list()
-        self.pass_order_list = list()
+        self.pass_order_list = {}
+        self.pass_order_length_list = list()
 
         self.init()
 
@@ -82,6 +86,7 @@ class Tree:
         for i in range(self.n+1):
             id = i + 1 + self.n
             station_track_node = TreeNode(id)
+            self.node_list[id]= station_track_node
             station_track_node.coordinate = (self.total_length, a - i * self.station_track_space)
             self.station_track_node.append(station_track_node)
             self.coordinate_list[id] = station_track_node.coordinate
@@ -98,6 +103,7 @@ class Tree:
         if not inorder:
             return None
         root = TreeNode(preorder[0])
+        self.node_list[preorder[0]] = root
         rootPots = inorder.index(preorder[0])
         root.left = self.buildTree(preorder[1:1+ rootPots],inorder[:rootPots])
         root.right = self.buildTree(preorder[rootPots++1:],inorder[rootPots+1:])
@@ -115,6 +121,7 @@ class Tree:
         if node.right is None:
             self.counter += 1
             node.right = TreeNode(self.counter)
+            self.node_list[self.counter] = node.right
             self.virtual_node_list.append(node.right)
             node.right.is_virtual = True
             node.right.father = node
@@ -124,6 +131,7 @@ class Tree:
         if node.left is None:
             self.counter += 1
             node.left = TreeNode(self.counter)
+            self.node_list[self.counter] = node.left
             self.virtual_node_list.append(node.left)
             node.left.is_virtual = True
             node.left.father = node
@@ -250,6 +258,11 @@ class Tree:
                 # print(k.value)
                 if k.value != 1:
                     if k.father.is_virtual:
+                        # init station track node length
+                        cf = k.father.coordinate
+                        ck = k.coordinate
+                        k.length = pow((ck[0] - cf[0]) ** 2 + (ck[1] - cf[1]) ** 2, 0.5)
+                        # print(str(k.value) + '号长度：' + str(k.length))
                         continue
                     if k.father.left:
                         if k.father.left.value == k.value:
@@ -257,13 +270,16 @@ class Tree:
                     if k.father.right:
                         if k.father.right.value == k.value:
                             k.angle = k.father.angle + self.alpha * (1 + k.father.direction) / 2
+                    # init node length
+                    k.length = self.l[k.value - 1]
                     k.coordinate[0] = k.father.coordinate[0] + self.l[k.value - 1] * math.cos(k.angle)
                     k.coordinate[1] = k.father.coordinate[1] + self.l[k.value - 1] * math.sin(k.angle)
                     print(str(k.value) + '父节点：' + str(k.father.value))
                     print(str(k.value) + '方向：' + str(k.direction))
                     print(str(k.value) + '号角度：' + str(k.angle))
                     print(str(k.value) + '号坐标：' + str(k.coordinate))
-                    print('L列表：' + str(self.l))
+                    print(str(k.value) + '号长度：' + str(k.length))
+                print('L列表：' + str(self.l))
                 if k.left:
                     queue.append(k.left)
                 if k.right:
@@ -307,6 +323,53 @@ class Tree:
             if k.right:
                 queue.append(k.right)
 
+    def total_length_init(self):
+        queue = [self.root]
+        length = 0
+        for i in queue:
+            # print(i.value)
+            length += i.length
+            if i.left:
+                queue.append(i.left)
+            if i.right:
+                queue.append(i.right)
+        return length
+
+    def matrix_init(self):
+        # a = numpy.array([0, [0], 0])
+        m = x = numpy.empty([self.n + 1, self.n + 1], dtype = list)
+        for i in range(self.n+1):
+            for j in range(self.n+1):
+                if i == j:
+                    m[i][j] = [0]
+                    continue
+                # if i == 0:
+                #     m[i][j] = j + self.n
+                #     continue
+                # if j == 0:
+                #     m[i][j] = i + self.n
+                #     continue
+
+                x = i + self.n + 1
+                y = j + self.n + 1
+                node_x = self.node_list[x]
+                node_y = self.node_list[y]
+                path_x = self.pass_order_list[x]
+                path_y = self.pass_order_list[y]
+                print(path_x, path_y)
+                share_point_list = [i for i in path_x if i in path_y]
+                share_point = max(share_point_list)
+                index = path_y.index(share_point)
+                path = path_y[0:index+1]
+                length = 0
+                for k in path[1:]:
+                    node = self.node_list[k]
+                    length += node.length
+                m[i][j] = [share_point, path, length]
+        return m
+
+
+
     def main(self):
         flag = True
         # plan layer filter
@@ -326,6 +389,7 @@ class Tree:
         # direction generator & controller
         self.comb = self.direction_generator()
         name = 0
+        # init node list
 
         # init direction
         if not self.direction_list:
@@ -355,17 +419,39 @@ class Tree:
                 self.draw_track(name)
                 print(self.station_track_coordinate)
 
-                # node length init
+                # pass order init & pass order length
 
-
-                # pass order init
-                self.pass_order_list = []
+                self.pass_order_list = {}
                 for j in range(self.n + 1):
                     self.pass_order = []
                     self.pass_order_init(self.station_track_node[j])
-                    self.pass_order_list.append(self.pass_order)
-                print(self.pass_order_list)
+                    self.pass_order_list[self.pass_order[0]] = self.pass_order
+                    pass_order_length = 0
+                    for k in self.pass_order:
+                        k_node = self.node_list[k]
+                        pass_order_length += k_node.length
+                    self.pass_order_length_list.append(pass_order_length)
+                print('出站路径' + str(self.pass_order_list))
+                print('出站路径长度' + str(self.pass_order_length_list))
 
+                # total length init
+                print('轨道总长度:' + str(self.total_length_init()))
+                # matrix init
+                m = self.matrix_init()
+                print(m)
+
+                workbook = xlwt.open_workbook('matrix.xlsx')
+                sheet = workbook.add_sheet(name)
+                for i in range(0, self.n + 1):
+                    for j in range(0, self.n + 2):
+                        if i == 0:
+                            sheet.write(i, j, j)
+                            continue
+                        if j == 0:
+                            sheet.write(i, j, i)
+                            continue
+                        sheet.write(i, j, m[i-1][j-1])
+                workbook.save(path)
 
 
         else:
@@ -377,33 +463,24 @@ class Tree:
             # draw track
             self.draw_track(name)
             print(self.station_track_coordinate)
-            # pass order init
+            # pass order init & pass order length
             self.pass_order_list = []
             for j in range(self.n + 1):
                 self.pass_order = []
                 self.pass_order_init(self.station_track_node[j])
-                self.pass_order_list.append(self.pass_order)
-            print(self.pass_order_list)
-
-
-def printTree(root):
-    res =[]
-    if root is None:
-        print(res)
-    queue = []
-    queue.append(root)
-    while len(queue) != 0:
-        tmp=[]
-        length = len(queue)
-        for i in range(length):
-            r = queue.pop(0)
-            if r.left is not None:
-                queue.append(r.left)
-            if r.right is not None:
-                queue.append(r.right)
-            tmp.append(r.value)
-        res.append(tmp)
-    print(res)
+                self.pass_order_list[self.pass_order[0]] = self.pass_order
+                pass_order_length = 0
+                for k in self.pass_order:
+                    k_node = self.node_list[k]
+                    pass_order_length += k_node.length
+                self.pass_order_length_list.append(pass_order_length)
+            print('出站路径' + str(self.pass_order_list))
+            print('出站路径长度' + str(self.pass_order_length_list))
+            # total length init
+            print('轨道总长度:' + str(self.total_length_init()))
+            # matrix init
+            self.matrix_init()
+            print()
 
 
 class draw:
