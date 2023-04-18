@@ -40,11 +40,10 @@ class Tree:
         self.l_forbidden = 3
         self.total_length = 500
         self.throat_length = 300
-        self.station_track_space = 5
+
         self.station_track_coordinate = {}
         self.station_track_node = []
         self.alpha = 0.1414
-        self.l = []
 
         self.edge = []
         self.coordinate_list = {}
@@ -59,8 +58,10 @@ class Tree:
         # changeable
         self.inorder = [3, 2, 4, 1, 6, 5, 7]
         self.direction_list = []
+        self.l = []
         self.l_list = [25, 30, 50]
         self.station_track_coordinate_startpoint = 0
+        self.station_track_space = 5
         self.station_track_space_list = []
 
         self.init()
