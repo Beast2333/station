@@ -93,7 +93,7 @@ class Tree:
             # self.station_track_coordinate[id] = (self.total_length, a + i * self.station_track_space)
         # init l list & virtual node list
         if len(self.l) == 0:
-            for i in range(3 * self.n + 2):
+            for i in range(3 * self.n + 1):
                 r = int(random.random() * 3)
                 self.l.append(self.l_list[r])
         # for i in range(2 * self.n+2, self.n * 3 +3):
@@ -271,9 +271,9 @@ class Tree:
                         if k.father.right.value == k.value:
                             k.angle = k.father.angle + self.alpha * (1 + k.father.direction) / 2
                     # init node length
-                    k.length = self.l[k.value - 1]
-                    k.coordinate[0] = k.father.coordinate[0] + self.l[k.value - 1] * math.cos(k.angle)
-                    k.coordinate[1] = k.father.coordinate[1] + self.l[k.value - 1] * math.sin(k.angle)
+                    k.length = self.l[k.value - 2]
+                    k.coordinate[0] = k.father.coordinate[0] + self.l[k.value - 2] * math.cos(k.angle)
+                    k.coordinate[1] = k.father.coordinate[1] + self.l[k.value - 2] * math.sin(k.angle)
                     print(str(k.value) + '父节点：' + str(k.father.value))
                     print(str(k.value) + '方向：' + str(k.direction))
                     print(str(k.value) + '号角度：' + str(k.angle))
