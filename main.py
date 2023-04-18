@@ -502,7 +502,7 @@ class Tree:
             for j in range(self.n + 1):
                 self.pass_order = []
                 self.pass_order_init(self.station_track_node[j])
-                print(self.pass_order_list)
+                # print(self.pass_order_list)
                 self.pass_order_list[self.pass_order[0]] = self.pass_order
                 pass_order_length = 0
                 for k in self.pass_order:
