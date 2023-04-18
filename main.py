@@ -60,9 +60,9 @@ class Tree:
         self.direction_list = []
         self.l = []
         self.l_list = [25, 30, 50]
-        self.station_track_coordinate_startpoint = 0
+        self.station_track_coordinate_startpoint = -80
         self.station_track_space = 5
-        self.station_track_space_list = []
+        self.station_track_space_list = [10, 20, 10, 20, 10, 20, 10]
 
         self.init()
 
@@ -103,7 +103,7 @@ class Tree:
             if i == 0:
                 space = self.station_track_coordinate_startpoint
             else:
-                space += self.station_track_space_list[i-1]
+                space -= self.station_track_space_list[i-1]
             station_track_node.coordinate = (self.total_length, space)
             self.station_track_node.append(station_track_node)
             self.coordinate_list[id] = station_track_node.coordinate
