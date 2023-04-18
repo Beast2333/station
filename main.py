@@ -28,8 +28,8 @@ class Tree:
         self.n = n
         self.choice = c
         self.order = []
-        self.preorder = []
-        self.inorder = []
+        self.preorder = [1,2,3,4,5,6,7]
+        self.inorder = [3,2,4,1,6,5,7]
         self.root = None
         self.direction_list = []
         self.direction_index = []
@@ -168,7 +168,7 @@ class Tree:
             self.inorder = copy(self.order)
             self.order_generator()
 
-        if not a:
+        if a:
             self.order_generator()
 
         while flag:
