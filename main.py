@@ -29,14 +29,14 @@ class Tree:
         self.choice = c
         self.order = []
         self.preorder = [1,2,3,4,5,6,7]
-        self.inorder = [3,2,4,1,6,5,7]
+
         self.root = None
-        self.direction_list = []
+
         self.direction_index = []
         self.comb = []
         self.node_list = {}
 
-        self.l_list = [25, 30, 50]
+
         self.l_forbidden = 3
         self.total_length = 500
         self.throat_length = 300
@@ -55,6 +55,13 @@ class Tree:
         self.pass_order = list()
         self.pass_order_list = {}
         self.pass_order_length_list = list()
+
+        # changeable
+        self.inorder = [3, 2, 4, 1, 6, 5, 7]
+        self.direction_list = []
+        self.l_list = [25, 30, 50]
+        self.station_track_coordinate_startpoint = 0
+        self.station_track_space_list = []
 
         self.init()
 
@@ -82,15 +89,24 @@ class Tree:
             self.direction_index.append(i)
 
         # init station track coordinate
-        a = (self.n + 1) // 2 * self.station_track_space
-        for i in range(self.n+1):
+        # a = (self.n + 1) // 2 * self.station_track_space
+        if len(self.station_track_space_list) == 0:
+            for i in range(self.n):
+                self.station_track_space_list.append(self.station_track_space)
+
+        space = 0
+        for i in range(self.n + 1):
             id = i + 1 + self.n
             station_track_node = TreeNode(id)
-            self.node_list[id]= station_track_node
-            station_track_node.coordinate = (self.total_length, a - i * self.station_track_space)
+            self.node_list[id] = station_track_node
+            if i == 0:
+                space = self.station_track_coordinate_startpoint
+            else:
+                space += self.station_track_space_list[i-1]
+            station_track_node.coordinate = (self.total_length, space)
             self.station_track_node.append(station_track_node)
             self.coordinate_list[id] = station_track_node.coordinate
-            # self.station_track_coordinate[id] = (self.total_length, a + i * self.station_track_space)
+
         # init l list & virtual node list
         if len(self.l) == 0:
             for i in range(3 * self.n + 1):
