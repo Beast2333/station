@@ -28,7 +28,7 @@ class Tree:
         self.n = n
         self.choice = c
         self.order = []
-        self.preorder = [1,2,3,4,5,6,7]
+        self.preorder = []
 
         self.root = None
 
@@ -56,13 +56,24 @@ class Tree:
         self.pass_order_length_list = list()
 
         # changeable
-        self.inorder = [3, 2, 4, 1, 6, 5, 7]
-        self.direction_list = []
-        self.l = []
+        # self.inorder = [4,5,6,3,2,8,7,9,1,12,11,10,14,13,15,16]
+        # self.direction_list = []
+        # self.l = []
+        # self.l_list = [25, 30, 50]
+        # self.station_track_coordinate_startpoint = 80
+        # self.station_track_space = 5
+        # self.station_track_space_list = []
+
+        # changeable
+        self.inorder = [4, 5, 6, 3, 2, 8, 7, 9, 1, 12, 11, 10, 14, 13, 15, 16]
+        self.direction_list = [1, 1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1]
+        self.l = [35.5, 35.5, 27.5, 73, 48, 150, 48, 35.5, 48, 73, 48, 27.5, 73, 35.5, 35.5, 99, 30, 50, 30, 30, 30, 30,
+                  30, 30, 50, 50, 30, 30, 25, 25, 30, 99, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+                  10, 10]
         self.l_list = [25, 30, 50]
         self.station_track_coordinate_startpoint = 80
         self.station_track_space = 5
-        self.station_track_space_list = [10, 20, 10, 20, 10, 20, 10]
+        self.station_track_space_list = [4.8, 4.8, 4.8, 4.8, 4.8, 7.4, 4.8, 4.8, 4.8, 4.8, 4.8, 7.4, 4.8, 4.8, 4.8, 4.8]
 
         self.init()
 
@@ -181,12 +192,12 @@ class Tree:
     def plan_generator(self, a):
         flag = True
         if len(self.preorder) == 0 and len(self.inorder) == 0:
-            self.preorder = copy(self.order)
             self.inorder = copy(self.order)
             self.order_generator()
 
         if a:
             self.order_generator()
+        self.preorder = copy(self.order)
 
         while flag:
             print('inorder:' + str(self.inorder))
@@ -487,10 +498,11 @@ class Tree:
             self.draw_track(name)
             print(self.station_track_coordinate)
             # pass order init & pass order length
-            self.pass_order_list = []
+            self.pass_order_list = {}
             for j in range(self.n + 1):
                 self.pass_order = []
                 self.pass_order_init(self.station_track_node[j])
+                print(self.pass_order_list)
                 self.pass_order_list[self.pass_order[0]] = self.pass_order
                 pass_order_length = 0
                 for k in self.pass_order:
@@ -539,7 +551,7 @@ class draw:
 
 
 if __name__ == "__main__":
-    s = Tree(7, 5)
+    s = Tree(16, 5)
     s.main()
     # printTree(s.root)
     d = draw(s.root)
