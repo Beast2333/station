@@ -60,7 +60,7 @@ class Tree:
         self.direction_list = []
         self.l = []
         self.l_list = [25, 30, 50]
-        self.station_track_coordinate_startpoint = -80
+        self.station_track_coordinate_startpoint = 80
         self.station_track_space = 5
         self.station_track_space_list = [10, 20, 10, 20, 10, 20, 10]
 
@@ -271,6 +271,7 @@ class Tree:
                 node.angle = 0
                 node.coordinate = (self.total_length - self.throat_length, 0)
             queue = [node]
+            print('L列表：' + str(self.l))
             for k in queue:
                 # print(k.value)
                 if k.value != 1:
@@ -296,7 +297,7 @@ class Tree:
                     print(str(k.value) + '号角度：' + str(k.angle))
                     print(str(k.value) + '号坐标：' + str(k.coordinate))
                     print(str(k.value) + '号长度：' + str(k.length))
-                print('L列表：' + str(self.l))
+
                 if k.left:
                     queue.append(k.left)
                 if k.right:
@@ -475,8 +476,6 @@ class Tree:
                 m = self.matrix_init()
                 # print(m)
                 self.excel_output(m, name)
-
-
 
         else:
             direction_list = copy(self.direction_list)
