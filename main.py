@@ -36,10 +36,7 @@ class Tree:
         self.comb = []
         self.node_list = {}
 
-
         self.l_forbidden = 3
-        self.total_length = 500
-        self.throat_length = 300
 
         self.station_track_coordinate = {}
         self.station_track_node = {}
@@ -65,6 +62,8 @@ class Tree:
         # self.station_track_space_list = []
 
         # changeable
+        self.total_length = 300
+        self.throat_length = 235
         self.inorder = [4, 5, 6, 3, 2, 8, 7, 9, 1, 12, 11, 10, 14, 13, 15, 16]
         self.direction_list = [1, 1, 1, -1, 1, -1, 1, -1, -1, 1, 1, 1, 1, -1, 1, -1]
         self.l = [48, 48, 48, 27.5, 35.5, 98, 35.5, 35.5, 73, 48, 48, 27.5, 73, 27.5, 27.5, 99, 30, 50, 30, 30, 30, 30,
@@ -391,10 +390,10 @@ class Tree:
                 index = path_y.index(share_point)
                 path = path_y[0:index+1]
                 length = 0
-                for k in path[1:]:
+                for k in path[:-1]:
                     node = self.node_list[k]
                     length += node.length
-                length += self.station_track_node[path[0]].length
+                # length += self.station_track_node[path[0]].length
                 m[i][j] = [share_point, path, length]
         return m
 
@@ -415,7 +414,7 @@ class Tree:
                 #     sheet[token].value = str(i)
                 #     continue
                 sheet[token].value = str(m[p][j])
-                time.sleep(0.02)
+                time.sleep(0.01)
         # workbook.save('./matrix.xlsx')
 
     def main(self):
@@ -554,10 +553,9 @@ class draw:
 if __name__ == "__main__":
     s = Tree(16, 5)
     s.main()
-    # printTree(s.root)
     d = draw(s.root)
     d.draw_plan()
-    # print(numpy.random.randint(1, 6, size=5))
+    print(numpy.random.randint(1, 6, size=5))
 
     # inorder = [3, 2, 4, 1, 5]
     # preorder = [1, 2, 3, 4, 5]
