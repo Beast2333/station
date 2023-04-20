@@ -421,7 +421,7 @@ class Tree:
     def main(self):
         flag = True
         # plan layer filter
-        a = 0
+        a = 1
         while flag:
             self.plan_generator(a)
             a = self.layer_filter()
