@@ -415,7 +415,7 @@ class Tree:
                 #     sheet[token].value = str(i)
                 #     continue
                 sheet[token].value = str(m[p][j])
-                time.sleep(0.05)
+                time.sleep(0.02)
         # workbook.save('./matrix.xlsx')
 
     def main(self):
